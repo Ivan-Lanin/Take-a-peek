@@ -13,7 +13,8 @@ public class UI : MonoBehaviour
 
     private void Awake()
     {
-        inputField.onEndEdit.AddListener(OnInputReceived);
+        inputField.onSubmit.AddListener(OnInputReceived);
+        inputField.Select();
     }
 
     private void OnInputReceived(string input)

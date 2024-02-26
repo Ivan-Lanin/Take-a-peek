@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private UI uiManager;
+    [SerializeField] private GameObject correctPopupTextPrefab;
+    [SerializeField] private GameObject wrongPopupTextPrefab;
+    [SerializeField] private GameObject pointsAreOutPopupTextPrefab;
 
     private int difficulty = 1;
     private string currentWord;
@@ -14,10 +17,13 @@ public class LevelManager : MonoBehaviour
 
     private void Awake()
     {
-        TextGenerator.onTextGenerated += SetCurrentWord;
-        UI.onInputReceived += AnswerCheck;
-        Tile.onSelected += DecreaseScore;
-        score = 20f;
+        SubscribeEvents();
+        score = 10f;
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeEvents();
     }
 
     private int GetDifficulty()
@@ -32,27 +38,48 @@ public class LevelManager : MonoBehaviour
 
     private void AnswerCheck(string answer)
     {
+        if (answer == "")
+            return;
         if (answer == currentWord)
         {
-            Debug.Log("Correct!");
+            GameObject correctPopupText = Instantiate(correctPopupTextPrefab, transform);
+
             RestartLevel();
+        }
+        else
+        {
+            GameObject wrongPopupText = Instantiate(wrongPopupTextPrefab, transform);
         }
     }
 
     private void DecreaseScore()
     {
-        score -= 2f;
+        score -= 1f;
         uiManager.SetScoreText(score);
         if (score <= 0)
         {
-            Debug.Log("Game Over!");
+            GameObject pointsAreOutPopupText = Instantiate(pointsAreOutPopupTextPrefab, transform);
             RestartLevel();
         }
     }
 
     private void RestartLevel()
     {
-        Debug.Log("Restarting Level...");
+        UnsubscribeEvents();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void SubscribeEvents()
+    {
+        TextGenerator.onTextGenerated += SetCurrentWord;
+        UI.onInputReceived += AnswerCheck;
+        Tile.onSelected += DecreaseScore;
+    }
+
+    private void UnsubscribeEvents()
+    {
+        TextGenerator.onTextGenerated -= SetCurrentWord;
+        UI.onInputReceived -= AnswerCheck;
+        Tile.onSelected -= DecreaseScore;
     }
 }

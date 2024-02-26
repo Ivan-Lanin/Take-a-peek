@@ -7,9 +7,9 @@ public class Tile : MonoBehaviour
 {
     public static Action onSelected;
 
-    private void OnDestroy()
+    public void DestroyByPlayer()
     {
-        Debug.Log("Tile Destroyed!");
         onSelected?.Invoke();
+        Destroy(gameObject);
     }
 }

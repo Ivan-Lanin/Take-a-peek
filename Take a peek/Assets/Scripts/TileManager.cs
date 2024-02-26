@@ -18,6 +18,7 @@ public class TileManager : MonoBehaviour
             {
                 if (hitInfo.collider.GetComponent<Tile>())
                 {
+                    hitInfo.collider.GetComponent<Tile>().DestroyByPlayer();
                     Destroy(hitInfo.collider.gameObject);
                 }
                 
